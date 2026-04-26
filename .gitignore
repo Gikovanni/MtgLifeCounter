@@ -1,0 +1,9 @@
+node_modules
+dist
+.idea
+.vscode
+android
+ios
+.DS_Store
+*.log
+*.err
