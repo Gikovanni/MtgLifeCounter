@@ -6,4 +6,4 @@ export const MIN_PLAYERS = 2;
 
 export const MAX_PLAYERS = 6;
 
-export const STORAGE_KEY = 'gk-mtg-counter.app-data.v1';
+export const STORAGE_KEY = 'gk-mtg-counter.angular-app-data.v1';

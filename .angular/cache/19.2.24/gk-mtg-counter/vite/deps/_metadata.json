@@ -1,0 +1,157 @@
+{
+  "hash": "ebdb46c3",
+  "configHash": "4ca08309",
+  "lockfileHash": "b30c411b",
+  "browserHash": "d576f12f",
+  "optimized": {
+    "@angular/core": {
+      "src": "../../../../../../node_modules/@angular/core/fesm2022/core.mjs",
+      "file": "@angular_core.js",
+      "fileHash": "bb6b1c61",
+      "needsInterop": false
+    },
+    "@angular/platform-browser": {
+      "src": "../../../../../../node_modules/@angular/platform-browser/fesm2022/platform-browser.mjs",
+      "file": "@angular_platform-browser.js",
+      "fileHash": "915b4bd2",
+      "needsInterop": false
+    },
+    "@capacitor/core": {
+      "src": "../../../../../../node_modules/@capacitor/core/dist/index.js",
+      "file": "@capacitor_core.js",
+      "fileHash": "c4bdf918",
+      "needsInterop": false
+    },
+    "@capacitor/filesystem": {
+      "src": "../../../../../../node_modules/@capacitor/filesystem/dist/esm/index.js",
+      "file": "@capacitor_filesystem.js",
+      "fileHash": "2cfbbaac",
+      "needsInterop": false
+    },
+    "@capacitor/preferences": {
+      "src": "../../../../../../node_modules/@capacitor/preferences/dist/esm/index.js",
+      "file": "@capacitor_preferences.js",
+      "fileHash": "577a7f08",
+      "needsInterop": false
+    },
+    "@capacitor/share": {
+      "src": "../../../../../../node_modules/@capacitor/share/dist/esm/index.js",
+      "file": "@capacitor_share.js",
+      "fileHash": "301ae084",
+      "needsInterop": false
+    },
+    "@ionic/angular/standalone": {
+      "src": "../../../../../../node_modules/@ionic/angular/fesm2022/ionic-angular-standalone.mjs",
+      "file": "@ionic_angular_standalone.js",
+      "fileHash": "9f4a105a",
+      "needsInterop": false
+    },
+    "ionicons": {
+      "src": "../../../../../../node_modules/ionicons/dist/index.js",
+      "file": "ionicons.js",
+      "fileHash": "51f7bc10",
+      "needsInterop": false
+    },
+    "ionicons/icons": {
+      "src": "../../../../../../node_modules/ionicons/icons/index.mjs",
+      "file": "ionicons_icons.js",
+      "fileHash": "1fd724cf",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "p-Cz5nLPGT-XM7MDQF5": {
+      "file": "p-Cz5nLPGT-XM7MDQF5.js"
+    },
+    "p-D6Ynv7Xh-UJF5C76S": {
+      "file": "p-D6Ynv7Xh-UJF5C76S.js"
+    },
+    "p-BgwEQWW6-NV7RXLVO": {
+      "file": "p-BgwEQWW6-NV7RXLVO.js"
+    },
+    "p-CneGxKsZ-JCAJCDTY": {
+      "file": "p-CneGxKsZ-JCAJCDTY.js"
+    },
+    "p-Cwv-vmkN-DS22AM6G": {
+      "file": "p-Cwv-vmkN-DS22AM6G.js"
+    },
+    "p-BmVRXR1y-2VFVFMH5": {
+      "file": "p-BmVRXR1y-2VFVFMH5.js"
+    },
+    "web-FMZWK7VT": {
+      "file": "web-FMZWK7VT.js"
+    },
+    "web-DZJS2YKP": {
+      "file": "web-DZJS2YKP.js"
+    },
+    "web-6XLELMBX": {
+      "file": "web-6XLELMBX.js"
+    },
+    "p-CBzELu-H-FQHGW7EX": {
+      "file": "p-CBzELu-H-FQHGW7EX.js"
+    },
+    "p-CU1SSH8_-YQ75W22J": {
+      "file": "p-CU1SSH8_-YQ75W22J.js"
+    },
+    "p-Cl0B-RWe-LJ43GFPJ": {
+      "file": "p-Cl0B-RWe-LJ43GFPJ.js"
+    },
+    "p-vEbVo2hO-C32XKSHE": {
+      "file": "p-vEbVo2hO-C32XKSHE.js"
+    },
+    "chunk-E6UG7NSK": {
+      "file": "chunk-E6UG7NSK.js"
+    },
+    "chunk-GRCWR7MR": {
+      "file": "chunk-GRCWR7MR.js"
+    },
+    "chunk-MJA5TOG2": {
+      "file": "chunk-MJA5TOG2.js"
+    },
+    "chunk-7QVGZMG4": {
+      "file": "chunk-7QVGZMG4.js"
+    },
+    "chunk-TB4NZ7QP": {
+      "file": "chunk-TB4NZ7QP.js"
+    },
+    "chunk-5WS5C3WK": {
+      "file": "chunk-5WS5C3WK.js"
+    },
+    "chunk-7KY32AE7": {
+      "file": "chunk-7KY32AE7.js"
+    },
+    "chunk-O6DIRG7C": {
+      "file": "chunk-O6DIRG7C.js"
+    },
+    "chunk-BQW3MFLP": {
+      "file": "chunk-BQW3MFLP.js"
+    },
+    "chunk-6Q3G2U7P": {
+      "file": "chunk-6Q3G2U7P.js"
+    },
+    "chunk-Z7TOVTGT": {
+      "file": "chunk-Z7TOVTGT.js"
+    },
+    "chunk-336XFI5V": {
+      "file": "chunk-336XFI5V.js"
+    },
+    "chunk-ODTJZN2N": {
+      "file": "chunk-ODTJZN2N.js"
+    },
+    "chunk-JRRVO33B": {
+      "file": "chunk-JRRVO33B.js"
+    },
+    "chunk-T74XUHKQ": {
+      "file": "chunk-T74XUHKQ.js"
+    },
+    "chunk-MBIED7MV": {
+      "file": "chunk-MBIED7MV.js"
+    },
+    "chunk-2ZAJDRMT": {
+      "file": "chunk-2ZAJDRMT.js"
+    },
+    "chunk-WDMUDEB6": {
+      "file": "chunk-WDMUDEB6.js"
+    }
+  }
+}
