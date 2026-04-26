@@ -1,9 +1,9 @@
 import { Preferences } from '@capacitor/preferences';
 import { Capacitor } from '@capacitor/core';
-import type { AppData } from './types';
-import { STORAGE_KEY } from './constants';
-import { createDefaultData } from './utils';
-import { normalizeLoadedData } from './validation';
+import type { AppData } from '../models/app-data.model';
+import { STORAGE_KEY } from '../constants/storage-keys';
+import { createDefaultData } from '../utils/match.util';
+import { normalizeLoadedData } from '../utils/validation.util';
 
 export interface StorageAdapter {
   load(): Promise<AppData>;

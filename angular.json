@@ -36,7 +36,8 @@
               "node_modules/@ionic/angular/css/text-transformation.css",
               "node_modules/@ionic/angular/css/flex-utils.css",
               "node_modules/@ionic/angular/css/display.css",
-              "src/theme/variables.css"
+              "src/theme/variables.scss",
+              "src/theme/app-theme.scss"
             ]
           },
           "configurations": {

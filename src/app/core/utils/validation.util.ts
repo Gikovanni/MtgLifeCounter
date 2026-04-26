@@ -1,5 +1,5 @@
-import type { AppData, AppSettings, CompletedMatch, ExportPayload, LocationRecord } from './types';
-import { createDefaultData, normalizeSettings } from './utils';
+import type { AppData, AppSettings, CompletedMatch, ExportPayload, LocationRecord } from '../models/app-data.model';
+import { createDefaultData, normalizeSettings } from './match.util';
 
 const isString = (value: unknown): value is string => typeof value === 'string';
 const isNumber = (value: unknown): value is number => typeof value === 'number' && Number.isFinite(value);

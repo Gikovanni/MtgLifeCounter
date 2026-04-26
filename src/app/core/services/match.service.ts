@@ -1,12 +1,11 @@
 import { Injectable, computed, effect, signal } from '@angular/core';
-import { appReducer } from '../state/appReducer';
-import { createStorageAdapter } from '../core/storage';
-import { createDefaultData, createExportPayload, formatDuration } from '../core/utils';
-import { buildMatchesCsv } from '../core/utils';
-import { readImportedTextFile, saveTextFile } from '../core/fileTransfer';
-import { isValidExportPayload, restoreDataFromPayload } from '../core/validation';
-import type { AppData, MatchSettings, ThemeMode } from '../core/types';
-import type { AppAction } from '../state/appReducer';
+import { appReducer } from './match-reducer.service';
+import { createStorageAdapter } from './storage.service';
+import { buildMatchesCsv, createDefaultData, createExportPayload, formatDuration } from '../utils/match.util';
+import { readImportedTextFile, saveTextFile } from './export.service';
+import { isValidExportPayload, restoreDataFromPayload } from '../utils/validation.util';
+import type { AppData, MatchSettings, ThemeMode } from '../models/app-data.model';
+import type { AppAction } from './match-reducer.service';
 
 @Injectable({ providedIn: 'root' })
 export class AppStateService {

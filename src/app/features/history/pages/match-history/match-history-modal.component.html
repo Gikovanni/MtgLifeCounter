@@ -1,0 +1,68 @@
+    <ion-modal class="sheet-modal" [isOpen]="isOpen" (didDismiss)="dismiss.emit()" [initialBreakpoint]="0.95" [breakpoints]="[0, 0.95]">
+      <ng-template>
+        <ion-content class="sheet">
+          <div class="sheet__content">
+            <div class="sheet__header">
+              <div>
+                <p class="sheet__eyebrow">Historico</p>
+                <h2>{{ showCompleted ? 'Partidas encerradas' : 'Alteracoes em tempo real' }}</h2>
+              </div>
+              <div class="sheet__header-actions">
+                <ion-button [fill]="showCompleted ? 'solid' : 'outline'" (click)="showCompleted = !showCompleted">
+                  {{ showCompleted ? 'Ver partida atual' : 'Ver partidas' }}
+                </ion-button>
+                <ion-button fill="clear" (click)="dismiss.emit()">Fechar</ion-button>
+              </div>
+            </div>
+
+            @if (showCompleted) {
+              <ion-list inset>
+                <ion-item>
+                  <ion-label>Filtrar por local</ion-label>
+                  <ion-select [value]="selectedLocationId" interface="popover" (ionChange)="selectedLocationId = stringValue($event.detail.value)">
+                    <ion-select-option value="__all__">Todos</ion-select-option>
+                    @for (location of data.locations; track location.id) {
+                      <ion-select-option [value]="location.id">{{ location.name }}</ion-select-option>
+                    }
+                  </ion-select>
+                </ion-item>
+              </ion-list>
+              <div class="history-list">
+                @for (match of filteredMatches(); track match.id) {
+                  <article class="completed-match-card">
+                    <div class="completed-match-card__header">
+                      <strong>{{ winnerName(match) }}</strong>
+                      <span>{{ dateLabel(match.endedAt) }}</span>
+                    </div>
+                    <p>{{ locationName(match.locationId) }}</p>
+                    <small>{{ durationLabel(match.durationMs) }}</small>
+                    <div class="completed-match-card__players">
+                      @for (player of match.players; track player.id) {
+                        <span>{{ player.name }}</span>
+                      }
+                    </div>
+                  </article>
+                }
+                @if (filteredMatches().length === 0) {
+                  <ion-note>Nenhuma partida encontrada.</ion-note>
+                }
+              </div>
+            } @else {
+              <div class="history-list">
+                @for (event of activeEvents(); track event.id) {
+                  <div class="history-row">
+                    <strong>{{ playerName(event.playerId) }}</strong>
+                    <span>{{ event.delta > 0 ? '+' + event.delta : event.delta }}</span>
+                    <small>{{ event.previousLife }} -> {{ event.nextLife }} at {{ timeLabel(event.timestamp) }}</small>
+                  </div>
+                }
+                @if (!data.activeMatch || data.activeMatch.events.length === 0) {
+                  <ion-note>Sem alteracoes registradas nesta partida.</ion-note>
+                }
+              </div>
+            }
+          </div>
+        </ion-content>
+      </ng-template>
+    </ion-modal>
+  

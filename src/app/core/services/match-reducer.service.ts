@@ -1,4 +1,4 @@
-import { MAX_PLAYERS, MIN_PLAYERS } from '../core/constants';
+import { MAX_PLAYERS, MIN_PLAYERS } from '../constants/storage-keys';
 import type {
   ActiveMatch,
   AppData,
@@ -7,7 +7,7 @@ import type {
   LocationRecord,
   MatchSettings,
   Player
-} from '../core/types';
+} from '../models/app-data.model';
 import {
   buildCompletedMatch,
   clampPlayerCount,
@@ -15,7 +15,7 @@ import {
   createId,
   createPlayer,
   nowIso
-} from '../core/utils';
+} from '../utils/match.util';
 
 export type AppAction =
   | { type: 'hydrate'; payload: AppData }

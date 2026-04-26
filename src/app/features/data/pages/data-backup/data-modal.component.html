@@ -1,0 +1,26 @@
+    <ion-modal class="sheet-modal" [isOpen]="isOpen" (didDismiss)="dismiss.emit()" [initialBreakpoint]="0.7" [breakpoints]="[0, 0.7, 0.95]">
+      <ng-template>
+        <ion-content class="sheet">
+          <div class="sheet__content">
+            <div class="sheet__header">
+              <div>
+                <p class="sheet__eyebrow">Dados</p>
+                <h2>Backup e exportacao</h2>
+              </div>
+              <ion-button fill="clear" (click)="dismiss.emit()">Fechar</ion-button>
+            </div>
+
+            <div class="data-actions">
+              <ion-button expand="block" (click)="exportJson.emit()">Exportar JSON</ion-button>
+              <ion-button expand="block" fill="outline" (click)="exportCsv.emit()">Exportar CSV</ion-button>
+              <ion-button expand="block" fill="solid" color="secondary" (click)="fileInput.click()">Importar backup JSON</ion-button>
+              <input #fileInput type="file" accept="application/json" hidden (change)="handleFile($event)" />
+              @if (status) {
+                <ion-note>{{ status }}</ion-note>
+              }
+            </div>
+          </div>
+        </ion-content>
+      </ng-template>
+    </ion-modal>
+  

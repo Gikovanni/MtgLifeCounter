@@ -22,7 +22,7 @@ Contador de vida para Magic: The Gathering feito com Ionic Angular e Capacitor.
 - Capacitor 7
 - TypeScript
 
-> Este projeto foi migrado de Ionic React para Ionic Angular. A logica de dominio em `src/core` foi preservada, e a camada de UI/estado foi recriada em Angular.
+> Projeto organizado como app Ionic + Angular + TypeScript, seguindo `architecture.md`.
 
 ## Rodando no navegador
 
@@ -73,13 +73,13 @@ android/app/build/outputs/apk/debug/app-debug.apk
 
 ## Estrutura
 
-- `src/app`: componentes Angular e servico de estado da aplicacao
-- `src/core`: tipos, validacao, storage, utilitarios e regras de dominio
-- `src/state`: reducer puro reaproveitado pela versao Angular
-- `src/theme/variables.css`: tema visual e layouts dos jogadores
+- `src/app/core`: modelos, servicos, constantes e utilitarios de dominio
+- `src/app/shared`: componentes reutilizaveis
+- `src/app/features`: telas e modais por feature
+- `src/theme/variables.scss`: tema visual e layouts dos jogadores
+- `src/theme/app-theme.scss`: ponto de extensao do tema
 - `capacitor.config.ts`: configuracao nativa do app
 
 ## Observacoes
 
-- A chave de storage foi alterada na migracao para Angular, entao dados locais da versao React nao sao reutilizados automaticamente.
 - A pasta `android/` fica fora do Git por padrao e pode ser recriada/sincronizada com Capacitor.

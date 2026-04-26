@@ -1,4 +1,4 @@
-import { MAX_PLAYERS, MIN_PLAYERS, PLAYER_COLORS } from './constants';
+import { MAX_PLAYERS, MIN_PLAYERS, PLAYER_COLORS } from '../constants/storage-keys';
 import type {
   ActiveMatch,
   AppData,
@@ -9,7 +9,7 @@ import type {
   MatchSettings,
   Player,
   PlayerPreset
-} from './types';
+} from '../models/app-data.model';
 
 export const nowIso = () => new Date().toISOString();
 

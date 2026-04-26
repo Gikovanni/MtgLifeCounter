@@ -1,0 +1,94 @@
+<main class="setup-shell">
+  <section class="setup-header">
+    <div>
+      <p class="topbar__eyebrow">Magic Life Counter</p>
+      <h1>Nova partida</h1>
+    </div>
+  </section>
+
+  <section class="setup-grid">
+    <div class="setup-panel">
+      <h2>Configuracao</h2>
+      <ion-list inset>
+        <ion-item>
+          <ion-label>Jogadores</ion-label>
+          <ion-select [value]="playerCount" interface="popover" (ionChange)="playerCount = numberValue($event.detail.value)">
+            @for (option of playerOptions; track option) {
+              <ion-select-option [value]="option">{{ option }}</ion-select-option>
+            }
+          </ion-select>
+        </ion-item>
+        <ion-item>
+          <ion-label>Vida inicial</ion-label>
+          <ion-select [value]="initialLife" interface="popover" (ionChange)="initialLife = numberValue($event.detail.value)">
+            @for (option of initialLifeOptions; track option) {
+              <ion-select-option [value]="option">{{ option }}</ion-select-option>
+            }
+          </ion-select>
+        </ion-item>
+        <ion-item>
+          <ion-label>Local</ion-label>
+          <ion-select [value]="locationId ?? '__none__'" interface="popover" (ionChange)="setSelectedLocation($event.detail.value)">
+            <ion-select-option value="__none__">Sem local</ion-select-option>
+            @for (location of data.locations; track location.id) {
+              <ion-select-option [value]="location.id">{{ location.name }}</ion-select-option>
+            }
+          </ion-select>
+        </ion-item>
+      </ion-list>
+      <ion-button expand="block" size="large" (click)="startMatch.emit({ initialLife, playerCount, locationId })">
+        Iniciar partida
+      </ion-button>
+    </div>
+
+    <div class="setup-panel">
+      <div class="section-heading">
+        <h2>Locais</h2>
+        <ion-icon name="location-outline"></ion-icon>
+      </div>
+      <div class="locations-form">
+        <ion-input
+          label="Nome"
+          labelPlacement="stacked"
+          [value]="locationName"
+          (ionInput)="locationName = stringValue($event.detail.value)"
+        ></ion-input>
+        <ion-textarea
+          label="Observacoes"
+          labelPlacement="stacked"
+          [value]="locationNotes"
+          [autoGrow]="true"
+          (ionInput)="locationNotes = stringValue($event.detail.value)"
+        ></ion-textarea>
+        <div class="setup-location-actions">
+          <ion-button [disabled]="!locationName.trim()" (click)="saveCurrentLocation()">
+            <ion-icon slot="start" [name]="editingLocation ? 'create-outline' : 'add-outline'"></ion-icon>
+            {{ editingLocation ? 'Atualizar' : 'Adicionar' }}
+          </ion-button>
+          @if (editingLocation) {
+            <ion-button fill="clear" color="medium" (click)="clearLocationForm()">Cancelar</ion-button>
+          }
+        </div>
+      </div>
+
+      <div class="locations-list">
+        @for (location of data.locations; track location.id) {
+          <div class="location-row">
+            <div>
+              <strong>{{ location.name }}</strong>
+              <p>{{ matchesByLocation.get(location.id) ?? 0 }} partidas</p>
+            </div>
+            <div class="location-row__actions">
+              <ion-button fill="clear" (click)="beginEditLocation(location)">
+                <ion-icon name="create-outline"></ion-icon>
+              </ion-button>
+              <ion-button fill="clear" color="danger" (click)="deleteLocation.emit(location.id)">
+                <ion-icon name="trash-outline"></ion-icon>
+              </ion-button>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+</main>

@@ -1,10 +1,10 @@
 import { Component, ViewChild, inject } from '@angular/core';
 import { AlertController, IonButton, IonContent, IonIcon, IonSpinner } from '@ionic/angular/standalone';
-import { AppStateService } from './app-state.service';
+import { AppStateService } from './core/services/match.service';
 import { DataModalComponent, FinishModalComponent, HistoryModalComponent, SettingsModalComponent } from './app-modals.component';
-import { PlayerCardComponent } from './player-card.component';
-import { SetupScreenComponent } from './setup-screen.component';
-import type { ActiveMatch, AppData, MatchSettings, Player } from '../core/types';
+import { PlayerCardComponent } from './shared/components/player-life-card/player-life-card.component';
+import { SetupScreenComponent } from './features/match/pages/match-setup/match-setup.component';
+import type { ActiveMatch, MatchSettings, Player } from './core/models/app-data.model';
 
 type PanelName = 'history' | 'data' | 'finish' | 'settings' | null;
 
@@ -78,116 +78,7 @@ const readImageFile = (file: File): Promise<string> =>
     SettingsModalComponent,
     SetupScreenComponent
   ],
-  template: `
-    <ion-content fullscreen>
-        @if (!state.hydrated()) {
-          <div class="app-loading">
-            <ion-spinner name="crescent"></ion-spinner>
-          </div>
-        } @else if (!data().activeMatch) {
-          <app-setup-screen
-            [data]="data()"
-            (startMatch)="state.startMatch($event)"
-            (saveLocation)="state.saveLocation($event)"
-            (deleteLocation)="state.deleteLocation($event)"
-          ></app-setup-screen>
-        } @else {
-          <main [class]="'app-shell players-' + data().activeMatch!.players.length">
-            <header class="topbar">
-              <div>
-                <p class="topbar__eyebrow">Magic Life Counter</p>
-                <h1>Partida ativa</h1>
-              </div>
-              <div class="topbar__side">
-                <div class="topbar__stats">
-                  <div class="stat-pill">
-                    <span>Tempo</span>
-                    <strong>{{ state.matchDurationLabel() }}</strong>
-                  </div>
-                  <div class="stat-pill">
-                    <span>Local</span>
-                    <strong>{{ currentLocationName() }}</strong>
-                  </div>
-                </div>
-                <div class="topbar__actions" aria-label="Acoes da partida">
-                  <ion-button fill="outline" size="small" class="topbar-action" (click)="activePanel = 'history'">
-                    <ion-icon name="list-outline" slot="start"></ion-icon>
-                    Historico
-                  </ion-button>
-                  <ion-button fill="outline" size="small" class="topbar-action" (click)="activePanel = 'data'">
-                    <ion-icon name="folder-open-outline" slot="start"></ion-icon>
-                    Dados
-                  </ion-button>
-                  <ion-button fill="outline" size="small" class="topbar-action" (click)="activePanel = 'finish'">
-                    <ion-icon name="flag-outline" slot="start"></ion-icon>
-                    Finalizar
-                  </ion-button>
-                  <ion-button fill="outline" size="small" class="topbar-action" (click)="activePanel = 'settings'">
-                    <ion-icon name="settings-outline" slot="start"></ion-icon>
-                    Config.
-                  </ion-button>
-                  <ion-button fill="outline" size="small" class="topbar-action" (click)="confirmReset()">
-                    <ion-icon name="refresh-outline" slot="start"></ion-icon>
-                    Resetar
-                  </ion-button>
-                </div>
-              </div>
-            </header>
-
-            <section class="arena">
-              @for (player of data().activeMatch!.players; track player.id; let index = $index) {
-                <app-player-card
-                  [player]="player"
-                  [layoutClassName]="playerLayoutClass(index)"
-                  [orientationClassName]="playerOrientationClass(index)"
-                  (rename)="state.renamePlayer(player.id, $event)"
-                  (lifeChange)="handleLifeChange(player, $event)"
-                  (backgroundFile)="handleBackgroundImage(player.id, $event)"
-                ></app-player-card>
-              }
-            </section>
-
-            <footer class="quick-actions">
-              <ion-button fill="outline" (click)="confirmStartNewMatch()">Nova partida</ion-button>
-            </footer>
-          </main>
-
-          <app-history-modal
-            [isOpen]="activePanel === 'history'"
-            [data]="data()"
-            (dismiss)="activePanel = null"
-          ></app-history-modal>
-          <app-data-modal
-            #dataModal
-            [isOpen]="activePanel === 'data'"
-            (dismiss)="activePanel = null"
-            (exportJson)="state.exportJson()"
-            (exportCsv)="state.exportCsv()"
-            (importJsonFile)="handleImportJsonFile($event)"
-          ></app-data-modal>
-          <app-finish-modal
-            [isOpen]="activePanel === 'finish'"
-            [data]="data()"
-            (dismiss)="activePanel = null"
-            (finish)="state.finishMatch($event)"
-          ></app-finish-modal>
-          <app-settings-modal
-            [isOpen]="activePanel === 'settings'"
-            [data]="data()"
-            (dismiss)="activePanel = null"
-            (setInitialLife)="state.setInitialLife($event)"
-            (setLocation)="state.setLocation($event)"
-            (saveSettings)="state.saveSettings($event)"
-            (setThemeMode)="state.setThemeMode($event)"
-            (addPlayer)="state.addPlayer()"
-            (removePlayer)="state.removePlayer($event)"
-            (saveLocation)="state.saveLocation($event)"
-            (deleteLocation)="state.deleteLocation($event)"
-            (startMatch)="startMatchFromSettings($event)"
-          ></app-settings-modal>
-        }
-    </ion-content>
-  `
+  templateUrl: './app.component.html'
 })
 export class AppComponent {
   readonly state = inject(AppStateService);
