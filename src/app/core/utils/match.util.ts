@@ -35,14 +35,14 @@ export const createDefaultSettings = (): AppSettings => ({
   defaultInitialLife: 20,
   defaultPlayerCount: 4,
   themeMode: 'dark',
-  playerNamePresets: ['Joao', 'Maria', 'Lucas', 'Pedro'],
+  playerNamePresets: ['Jogador 1', 'Jogador 2', 'Jogador 3', 'Jogador 4'],
   playerPresets: [
-    { slot: 0, name: 'Joao' },
-    { slot: 1, name: 'Maria' },
-    { slot: 2, name: 'Lucas' },
-    { slot: 3, name: 'Pedro' },
-    { slot: 4, name: 'Daniel' },
-    { slot: 5, name: 'Gabi' }
+    { slot: 0, name: 'Jogador 1' },
+    { slot: 1, name: 'Jogador 2' },
+    { slot: 2, name: 'Jogador 3' },
+    { slot: 3, name: 'Jogador 4' },
+    { slot: 4, name: 'Jogador 5' },
+    { slot: 5, name: 'Jogador 6' }
   ],
   lastSelectedLocationId: null
 });

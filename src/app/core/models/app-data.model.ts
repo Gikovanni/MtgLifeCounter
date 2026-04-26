@@ -12,12 +12,23 @@ export interface Player {
 
 export interface LifeChangeEvent {
   id: string;
+  type?: 'lifeChange';
   playerId: string;
   delta: number;
   previousLife: number;
   nextLife: number;
   timestamp: string;
 }
+
+export interface DiceRollEvent {
+  id: string;
+  type: 'diceRoll';
+  die: 6 | 20;
+  result: number;
+  timestamp: string;
+}
+
+export type MatchEvent = LifeChangeEvent | DiceRollEvent;
 
 export interface LocationRecord {
   id: string;
@@ -46,7 +57,7 @@ export interface ActiveMatch {
   updatedAt: string;
   initialLife: number;
   players: Player[];
-  events: LifeChangeEvent[];
+  events: MatchEvent[];
   locationId: string | null;
 }
 
@@ -58,7 +69,7 @@ export interface CompletedMatch {
   durationMs: number;
   initialLife: number;
   players: Player[];
-  events: LifeChangeEvent[];
+  events: MatchEvent[];
   winnerPlayerId: string;
   locationId: string | null;
 }

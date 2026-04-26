@@ -51,9 +51,15 @@
               <div class="history-list">
                 @for (event of activeEvents(); track event.id) {
                   <div class="history-row">
-                    <strong>{{ playerName(event.playerId) }}</strong>
-                    <span>{{ event.delta > 0 ? '+' + event.delta : event.delta }}</span>
-                    <small>{{ event.previousLife }} -> {{ event.nextLife }} at {{ timeLabel(event.timestamp) }}</small>
+                    @if (isDiceRollEvent(event)) {
+                      <strong>Dado</strong>
+                      <span>D{{ event.die }} -> {{ event.result }}</span>
+                      <small>Rolado at {{ timeLabel(event.timestamp) }}</small>
+                    } @else {
+                      <strong>{{ playerName(event) }}</strong>
+                      <span>{{ event.delta > 0 ? '+' + event.delta : event.delta }}</span>
+                      <small>{{ event.previousLife }} -> {{ event.nextLife }} at {{ timeLabel(event.timestamp) }}</small>
+                    }
                   </div>
                 }
                 @if (!data.activeMatch || data.activeMatch.events.length === 0) {

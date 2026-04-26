@@ -1,1 +1,1 @@
-export type { LifeChangeEvent } from './app-data.model';
+export type { DiceRollEvent, LifeChangeEvent, MatchEvent } from './app-data.model';

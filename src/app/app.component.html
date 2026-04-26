@@ -12,53 +12,13 @@
     ></app-setup-screen>
   } @else {
     <main [class]="'app-shell players-' + data().activeMatch!.players.length">
-      <header class="topbar">
-        <div>
-          <p class="topbar__eyebrow">Magic Life Counter</p>
-          <h1>Partida ativa</h1>
-        </div>
-        <div class="topbar__side">
-          <div class="topbar__stats">
-            <div class="stat-pill">
-              <span>Tempo</span>
-              <strong>{{ state.matchDurationLabel() }}</strong>
-            </div>
-            <div class="stat-pill">
-              <span>Local</span>
-              <strong>{{ currentLocationName() }}</strong>
-            </div>
-          </div>
-          <div class="topbar__actions" aria-label="Acoes da partida">
-            <ion-button fill="outline" size="small" class="topbar-action" (click)="activePanel = 'history'">
-              <ion-icon name="list-outline" slot="start"></ion-icon>
-              Historico
-            </ion-button>
-            <ion-button fill="outline" size="small" class="topbar-action" (click)="activePanel = 'data'">
-              <ion-icon name="folder-open-outline" slot="start"></ion-icon>
-              Dados
-            </ion-button>
-            <ion-button fill="outline" size="small" class="topbar-action" (click)="activePanel = 'finish'">
-              <ion-icon name="flag-outline" slot="start"></ion-icon>
-              Finalizar
-            </ion-button>
-            <ion-button fill="outline" size="small" class="topbar-action" (click)="activePanel = 'settings'">
-              <ion-icon name="settings-outline" slot="start"></ion-icon>
-              Config.
-            </ion-button>
-            <ion-button fill="outline" size="small" class="topbar-action" (click)="confirmReset()">
-              <ion-icon name="refresh-outline" slot="start"></ion-icon>
-              Resetar
-            </ion-button>
-          </div>
-        </div>
-      </header>
-
       <section class="arena">
         @for (player of data().activeMatch!.players; track player.id; let index = $index) {
           <app-player-card
             [player]="player"
             [layoutClassName]="playerLayoutClass(index)"
             [orientationClassName]="playerOrientationClass(index)"
+            [pendingLifeDelta]="pendingLifeDelta(player.id)"
             (rename)="state.renamePlayer(player.id, $event)"
             (lifeChange)="handleLifeChange(player, $event)"
             (backgroundFile)="handleBackgroundImage(player.id, $event)"
@@ -66,9 +26,15 @@
         }
       </section>
 
-      <footer class="quick-actions">
-        <ion-button fill="outline" (click)="confirmStartNewMatch()">Nova partida</ion-button>
-      </footer>
+      <button
+        class="match-menu-button"
+        type="button"
+        aria-label="Abrir menu da partida"
+        (click)="openMatchMenu()"
+      >
+        <mat-icon>menu</mat-icon>
+        <span>Menu</span>
+      </button>
     </main>
 
     <app-history-modal
@@ -88,7 +54,7 @@
       [isOpen]="activePanel === 'finish'"
       [data]="data()"
       (dismiss)="activePanel = null"
-      (finish)="state.finishMatch($event)"
+      (finish)="finishMatch($event)"
     ></app-finish-modal>
     <app-settings-modal
       [isOpen]="activePanel === 'settings'"

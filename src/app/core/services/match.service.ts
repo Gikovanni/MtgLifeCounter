@@ -59,8 +59,18 @@ export class AppStateService {
     this.dispatch({ type: 'startMatch', payload: settings });
   }
 
-  updatePlayerLife(playerId: string, delta: number) {
-    this.dispatch({ type: 'updateLife', payload: { playerId, delta } });
+  updatePlayerLife(playerId: string, delta: number, recordHistory = true) {
+    this.dispatch({ type: 'updateLife', payload: { playerId, delta, recordHistory } });
+  }
+
+  recordPlayerLifeChange(playerId: string, previousLife: number, nextLife: number) {
+    this.dispatch({ type: 'recordLifeChange', payload: { playerId, previousLife, nextLife } });
+  }
+
+  rollDice(die: 6 | 20) {
+    const result = Math.floor(Math.random() * die) + 1;
+    this.dispatch({ type: 'rollDice', payload: { die, result } });
+    return result;
   }
 
   renamePlayer(playerId: string, name: string) {

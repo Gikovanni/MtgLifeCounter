@@ -1,1 +1,1 @@
-export type { ActiveMatch, CompletedMatch, LifeChangeEvent, MatchSettings, MatchStatus } from './app-data.model';
+export type { ActiveMatch, CompletedMatch, DiceRollEvent, LifeChangeEvent, MatchEvent, MatchSettings, MatchStatus } from './app-data.model';

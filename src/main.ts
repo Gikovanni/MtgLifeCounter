@@ -1,4 +1,5 @@
 import { bootstrapApplication } from '@angular/platform-browser';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideIonicAngular } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -29,5 +30,5 @@ addIcons({
 });
 
 bootstrapApplication(AppComponent, {
-  providers: [provideIonicAngular()]
+  providers: [provideIonicAngular(), provideAnimationsAsync()]
 }).catch((error) => console.error(error));

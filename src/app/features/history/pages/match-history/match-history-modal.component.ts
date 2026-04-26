@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { IonButton, IonContent, IonItem, IonLabel, IonList, IonModal, IonNote, IonSelect, IonSelectOption } from '@ionic/angular/standalone';
-import type { AppData, CompletedMatch } from '../../../../core/models/app-data.model';
+import type { AppData, CompletedMatch, MatchEvent } from '../../../../core/models/app-data.model';
 import { formatDuration } from '../../../../core/utils/match.util';
 
 @Component({
@@ -40,8 +40,16 @@ export class HistoryModalComponent implements OnChanges {
     return this.data.activeMatch?.events.slice().reverse() ?? [];
   }
 
-  playerName(playerId: string) {
-    return this.data.activeMatch?.players.find((player) => player.id === playerId)?.name ?? 'Jogador';
+  isDiceRollEvent(event: MatchEvent) {
+    return event.type === 'diceRoll';
+  }
+
+  playerName(event: MatchEvent) {
+    if (this.isDiceRollEvent(event)) {
+      return 'Dado';
+    }
+
+    return this.data.activeMatch?.players.find((player) => player.id === event.playerId)?.name ?? 'Jogador';
   }
 
   winnerName(match: CompletedMatch) {

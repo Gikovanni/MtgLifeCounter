@@ -21,17 +21,29 @@ const hasValidPlayers = (players: unknown) =>
 
 const hasValidEvents = (events: unknown) =>
   isArray(events) &&
-  events.every(
-    (event) =>
-      event &&
-      typeof event === 'object' &&
-      isString((event as Record<string, unknown>).id) &&
-      isString((event as Record<string, unknown>).playerId) &&
-      isNumber((event as Record<string, unknown>).delta) &&
-      isNumber((event as Record<string, unknown>).previousLife) &&
-      isNumber((event as Record<string, unknown>).nextLife) &&
-      isString((event as Record<string, unknown>).timestamp)
-  );
+  events.every((event) => {
+    if (!event || typeof event !== 'object') {
+      return false;
+    }
+
+    const record = event as Record<string, unknown>;
+
+    if (!isString(record.id) || !isString(record.timestamp)) {
+      return false;
+    }
+
+    if (record.type === 'diceRoll') {
+      return (record.die === 6 || record.die === 20) && isNumber(record.result);
+    }
+
+    return (
+      (record.type === undefined || record.type === 'lifeChange') &&
+      isString(record.playerId) &&
+      isNumber(record.delta) &&
+      isNumber(record.previousLife) &&
+      isNumber(record.nextLife)
+    );
+  });
 
 const isLocation = (location: unknown): location is LocationRecord =>
   !!location &&

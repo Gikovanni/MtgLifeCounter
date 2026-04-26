@@ -1,12 +1,28 @@
 import { Component, ViewChild, inject } from '@angular/core';
-import { AlertController, IonButton, IonContent, IonIcon, IonSpinner } from '@ionic/angular/standalone';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
+import { AlertController, IonContent, IonSpinner } from '@ionic/angular/standalone';
 import { AppStateService } from './core/services/match.service';
 import { DataModalComponent, FinishModalComponent, HistoryModalComponent, SettingsModalComponent } from './app-modals.component';
+import { DiceRollDialogComponent } from './features/match/components/dice-roll-dialog/dice-roll-dialog.component';
+import { MatchMenuAction, MatchMenuBottomSheetComponent } from './features/match/components/match-menu-bottom-sheet/match-menu-bottom-sheet.component';
 import { PlayerCardComponent } from './shared/components/player-life-card/player-life-card.component';
 import { SetupScreenComponent } from './features/match/pages/match-setup/match-setup.component';
 import type { ActiveMatch, MatchSettings, Player } from './core/models/app-data.model';
 
 type PanelName = 'history' | 'data' | 'finish' | 'settings' | null;
+
+interface PendingLifeChange {
+  matchId: string;
+  playerId: string;
+  previousLife: number;
+  nextLife: number;
+  timeoutId: ReturnType<typeof window.setTimeout>;
+}
+
+const LIFE_HISTORY_DEBOUNCE_MS = 5000;
 
 const layoutClassMap: Record<number, string[]> = {
   2: ['arena-player--two-top', 'arena-player--two-bottom'],
@@ -67,10 +83,10 @@ const readImageFile = (file: File): Promise<string> =>
   selector: 'app-root',
   standalone: true,
   imports: [
-    IonButton,
     IonContent,
-    IonIcon,
     IonSpinner,
+    MatButtonModule,
+    MatIconModule,
     DataModalComponent,
     FinishModalComponent,
     HistoryModalComponent,
@@ -83,8 +99,11 @@ const readImageFile = (file: File): Promise<string> =>
 export class AppComponent {
   readonly state = inject(AppStateService);
   private readonly alertController = inject(AlertController);
+  private readonly bottomSheet = inject(MatBottomSheet);
+  private readonly dialog = inject(MatDialog);
   activePanel: PanelName = null;
   dismissedAutoFinishKey: string | null = null;
+  private readonly pendingLifeChanges = new Map<string, PendingLifeChange>();
   @ViewChild('dataModal') dataModal?: DataModalComponent;
 
   data() {
@@ -107,6 +126,63 @@ export class AppComponent {
     return (orientationClassMap[playerCount] ?? orientationClassMap[4])[index] ?? '';
   }
 
+  pendingLifeDelta(playerId: string) {
+    const pending = this.pendingLifeChanges.get(playerId);
+
+    if (!pending) {
+      return 0;
+    }
+
+    return pending.nextLife - pending.previousLife;
+  }
+
+  openMatchMenu() {
+    const sheetRef = this.bottomSheet.open<MatchMenuBottomSheetComponent, unknown, MatchMenuAction>(
+      MatchMenuBottomSheetComponent,
+      {
+        panelClass: 'match-menu-sheet',
+        data: {
+          duration: this.state.matchDurationLabel(),
+          location: this.currentLocationName()
+        }
+      }
+    );
+
+    sheetRef.afterDismissed().subscribe((action) => {
+      if (!action) {
+        return;
+      }
+
+      this.handleMenuAction(action);
+    });
+  }
+
+  private handleMenuAction(action: MatchMenuAction) {
+    if (action === 'reset') {
+      void this.confirmReset();
+      return;
+    }
+
+    if (action === 'newMatch') {
+      void this.confirmStartNewMatch();
+      return;
+    }
+
+    if (action === 'dice') {
+      this.openDiceDialog();
+      return;
+    }
+
+    this.activePanel = action;
+  }
+
+  private openDiceDialog() {
+    this.dialog.open(DiceRollDialogComponent, {
+      panelClass: 'dice-dialog-panel',
+      width: 'min(360px, calc(100vw - 32px))'
+    });
+  }
+
   async confirmStartNewMatch() {
     const alert = await this.alertController.create({
       header: 'Nova partida',
@@ -116,7 +192,10 @@ export class AppComponent {
         {
           text: 'Voltar',
           role: 'destructive',
-          handler: () => this.state.clearActiveMatch()
+          handler: () => {
+            this.flushPendingLifeChanges();
+            this.state.clearActiveMatch();
+          }
         }
       ]
     });
@@ -127,7 +206,17 @@ export class AppComponent {
     const alert = await this.alertController.create({
       header: 'Resetar partida',
       message: 'As vidas e o historico em tempo real serao reiniciados.',
-      buttons: ['Cancelar', { text: 'Resetar', role: 'destructive', handler: () => this.state.resetActiveMatch() }]
+      buttons: [
+        'Cancelar',
+        {
+          text: 'Resetar',
+          role: 'destructive',
+          handler: () => {
+            this.clearPendingLifeChanges();
+            this.state.resetActiveMatch();
+          }
+        }
+      ]
     });
     await alert.present();
   }
@@ -146,7 +235,8 @@ export class AppComponent {
     const changedPlayer = projectedPlayers.find((item) => item.id === player.id);
     const autoFinishKey = `${activeMatch.id}:${projectedPlayers.map((item) => `${item.id}:${item.life}`).join('|')}`;
 
-    this.state.updatePlayerLife(player.id, delta);
+    this.queueLifeChange(activeMatch.id, player, delta);
+    this.state.updatePlayerLife(player.id, delta, false);
 
     if (
       positivePlayers.length === 1 &&
@@ -173,8 +263,70 @@ export class AppComponent {
   }
 
   startMatchFromSettings(payload: MatchSettings) {
+    this.flushPendingLifeChanges();
     this.state.startMatch(payload);
     this.activePanel = null;
+  }
+
+  finishMatch(winnerPlayerId: string) {
+    this.flushPendingLifeChanges();
+    this.state.finishMatch(winnerPlayerId);
+  }
+
+  private queueLifeChange(matchId: string, player: Player, delta: number) {
+    const existing = this.pendingLifeChanges.get(player.id);
+    const pending: PendingLifeChange = existing
+      ? {
+          ...existing,
+          nextLife: existing.nextLife + delta
+        }
+      : {
+          matchId,
+          playerId: player.id,
+          previousLife: player.life,
+          nextLife: player.life + delta,
+          timeoutId: 0
+        };
+
+    if (existing) {
+      window.clearTimeout(existing.timeoutId);
+    }
+
+    pending.timeoutId = window.setTimeout(() => {
+      this.flushPendingLifeChange(player.id);
+    }, LIFE_HISTORY_DEBOUNCE_MS);
+
+    this.pendingLifeChanges.set(player.id, pending);
+  }
+
+  private flushPendingLifeChange(playerId: string) {
+    const pending = this.pendingLifeChanges.get(playerId);
+
+    if (!pending) {
+      return;
+    }
+
+    window.clearTimeout(pending.timeoutId);
+    this.pendingLifeChanges.delete(playerId);
+
+    if (pending.previousLife === pending.nextLife || this.data().activeMatch?.id !== pending.matchId) {
+      return;
+    }
+
+    this.state.recordPlayerLifeChange(pending.playerId, pending.previousLife, pending.nextLife);
+  }
+
+  private flushPendingLifeChanges() {
+    Array.from(this.pendingLifeChanges.keys()).forEach((playerId) => {
+      this.flushPendingLifeChange(playerId);
+    });
+  }
+
+  private clearPendingLifeChanges() {
+    this.pendingLifeChanges.forEach((pending) => {
+      window.clearTimeout(pending.timeoutId);
+    });
+    this.pendingLifeChanges.clear();
   }
 
   private async presentAutoFinishAlert(activeMatch: ActiveMatch, winner: Player, autoFinishKey: string) {
@@ -191,7 +343,10 @@ export class AppComponent {
         },
         {
           text: 'Confirmar',
-          handler: () => this.state.finishMatch(winner.id)
+          handler: () => {
+            this.flushPendingLifeChanges();
+            this.state.finishMatch(winner.id);
+          }
         }
       ]
     });

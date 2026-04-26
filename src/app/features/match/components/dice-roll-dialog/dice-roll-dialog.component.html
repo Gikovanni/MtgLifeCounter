@@ -1,0 +1,27 @@
+<section class="dice-dialog">
+  <h2 mat-dialog-title>Jogar dado</h2>
+  <mat-dialog-content>
+    <mat-button-toggle-group
+      class="dice-dialog__toggle"
+      aria-label="Selecionar dado"
+      [value]="selectedDie"
+      (valueChange)="selectedDie = $event"
+    >
+      <mat-button-toggle [value]="6">D6</mat-button-toggle>
+      <mat-button-toggle [value]="20">D20</mat-button-toggle>
+    </mat-button-toggle-group>
+    @if (lastResult !== null) {
+      <div class="dice-dialog__result">
+        <span>Resultado</span>
+        <strong>{{ lastResult }}</strong>
+      </div>
+    }
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" mat-dialog-close>Cancelar</button>
+    <button mat-flat-button type="button" (click)="roll()">
+      <mat-icon>casino</mat-icon>
+      Jogar D{{ selectedDie }}
+    </button>
+  </mat-dialog-actions>
+</section>

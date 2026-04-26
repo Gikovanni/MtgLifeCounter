@@ -3,6 +3,7 @@ import type {
   ActiveMatch,
   AppData,
   CompletedMatch,
+  DiceRollEvent,
   LifeChangeEvent,
   LocationRecord,
   MatchSettings,
@@ -20,7 +21,9 @@ import {
 export type AppAction =
   | { type: 'hydrate'; payload: AppData }
   | { type: 'startMatch'; payload: MatchSettings }
-  | { type: 'updateLife'; payload: { playerId: string; delta: number } }
+  | { type: 'updateLife'; payload: { playerId: string; delta: number; recordHistory?: boolean } }
+  | { type: 'recordLifeChange'; payload: { playerId: string; previousLife: number; nextLife: number } }
+  | { type: 'rollDice'; payload: { die: 6 | 20; result: number } }
   | { type: 'renamePlayer'; payload: { playerId: string; name: string } }
   | { type: 'updatePlayerBackground'; payload: { playerId: string; backgroundImageDataUrl?: string } }
   | { type: 'addPlayer' }
@@ -42,12 +45,21 @@ const updateActiveMatch = (match: ActiveMatch, partial: Partial<ActiveMatch>): A
   updatedAt: nowIso()
 });
 
-const createLifeChangeEvent = (player: Player, delta: number): LifeChangeEvent => ({
+const createLifeChangeEvent = (playerId: string, previousLife: number, nextLife: number): LifeChangeEvent => ({
   id: createId(),
-  playerId: player.id,
-  delta,
-  previousLife: player.life,
-  nextLife: player.life + delta,
+  type: 'lifeChange',
+  playerId,
+  delta: nextLife - previousLife,
+  previousLife,
+  nextLife,
+  timestamp: nowIso()
+});
+
+const createDiceRollEvent = (die: 6 | 20, result: number): DiceRollEvent => ({
+  id: createId(),
+  type: 'diceRoll',
+  die,
+  result,
   timestamp: nowIso()
 });
 
@@ -111,15 +123,58 @@ export const appReducer = (state: AppData, action: AppAction): AppData => {
         return state;
       }
 
-      const event = createLifeChangeEvent(targetPlayer, action.payload.delta);
+      const nextLife = targetPlayer.life + action.payload.delta;
+      const event = createLifeChangeEvent(targetPlayer.id, targetPlayer.life, nextLife);
 
       return {
         ...state,
         activeMatch: updateActiveMatch(state.activeMatch, {
           players: state.activeMatch.players.map((player) =>
-            player.id === action.payload.playerId ? { ...player, life: event.nextLife } : player
+            player.id === action.payload.playerId ? { ...player, life: nextLife } : player
           ),
-          events: [...state.activeMatch.events, event]
+          events:
+            action.payload.recordHistory === false
+              ? state.activeMatch.events
+              : [...state.activeMatch.events, event]
+        })
+      };
+    }
+    case 'recordLifeChange': {
+      if (!state.activeMatch) {
+        return state;
+      }
+
+      const targetPlayer = state.activeMatch.players.find(
+        (player) => player.id === action.payload.playerId
+      );
+
+      if (!targetPlayer || action.payload.previousLife === action.payload.nextLife) {
+        return state;
+      }
+
+      return {
+        ...state,
+        activeMatch: updateActiveMatch(state.activeMatch, {
+          events: [
+            ...state.activeMatch.events,
+            createLifeChangeEvent(
+              action.payload.playerId,
+              action.payload.previousLife,
+              action.payload.nextLife
+            )
+          ]
+        })
+      };
+    }
+    case 'rollDice': {
+      if (!state.activeMatch) {
+        return state;
+      }
+
+      return {
+        ...state,
+        activeMatch: updateActiveMatch(state.activeMatch, {
+          events: [...state.activeMatch.events, createDiceRollEvent(action.payload.die, action.payload.result)]
         })
       };
     }
@@ -216,7 +271,9 @@ export const appReducer = (state: AppData, action: AppAction): AppData => {
       }
 
       const players = state.activeMatch.players.filter((player) => player.id !== action.payload.playerId);
-      const events = state.activeMatch.events.filter((event) => event.playerId !== action.payload.playerId);
+      const events = state.activeMatch.events.filter(
+        (event) => event.type === 'diceRoll' || event.playerId !== action.payload.playerId
+      );
 
       return {
         ...state,

@@ -1,3 +1,20 @@
+
+// Custom Theming for Angular Material
+// For more information: https://material.angular.dev/guide/theming
+@use '@angular/material' as mat;
+
+html {
+  @include mat.theme((
+    color: (
+      theme-type: light,
+      primary: mat.$azure-palette,
+      tertiary: mat.$blue-palette,
+    ),
+    typography: Roboto,
+    density: 0,
+  ));
+}
+
 :root {
   --app-bg: #05070b;
   --app-bg-rgb: 5, 7, 11;
@@ -86,6 +103,10 @@ ion-content {
   --background: var(--app-page-background);
 }
 
+ion-content::part(scroll) {
+  overscroll-behavior: contain;
+}
+
 ion-modal.sheet-modal::part(content) {
   --background: var(--app-surface-strong);
   color: var(--app-text);
@@ -116,8 +137,12 @@ ion-button {
 }
 
 .app-shell {
-  min-height: 100vh;
-  padding: 18px 14px 24px;
+  position: relative;
+  height: 100dvh;
+  min-height: 100dvh;
+  width: 100%;
+  padding: 0;
+  overflow: hidden;
   color: var(--app-text);
 }
 
@@ -230,16 +255,18 @@ ion-button {
   position: relative;
   display: grid;
   gap: 8px;
-  min-height: calc(100vh - 170px);
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
   grid-template-columns: repeat(12, 1fr);
-  grid-template-rows: repeat(12, minmax(40px, 1fr));
+  grid-template-rows: repeat(12, minmax(0, 1fr));
 }
 
 .arena-player {
   position: relative;
-  border-radius: 26px;
+  border-radius: 18px;
   overflow: hidden;
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.18), 0 18px 45px rgba(0, 0, 0, 0.26);
+  box-shadow: none;
   color: var(--app-player-text);
 }
 
@@ -307,10 +334,24 @@ ion-button {
 
 .arena-player__name {
   align-self: start;
+  justify-self: center;
   width: 100%;
+  max-width: min(78%, 280px);
+  padding: 8px 14px;
+  border: 0;
+  outline: 0;
+  border-radius: 999px;
+  background: var(--app-player-button-bg);
+  color: var(--app-player-button-text);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(10px);
   font-size: 1.3rem;
   font-weight: 800;
   text-align: center;
+}
+
+.arena-player__name::placeholder {
+  color: var(--app-player-muted);
 }
 
 .arena-player__meta {
@@ -327,10 +368,9 @@ ion-button {
   z-index: 3;
 }
 
-.arena-player__tools ion-button {
-  --background: var(--app-player-button-bg);
-  --color: var(--app-player-button-text);
-  --border-radius: 999px;
+.arena-player__tools button {
+  background: var(--app-player-button-bg);
+  color: var(--app-player-button-text);
   width: 42px;
   height: 42px;
 }
@@ -345,10 +385,44 @@ ion-button {
 
 .arena-player__life {
   align-self: center;
+  justify-self: center;
+  min-width: min(72%, 260px);
+  padding: 12px 22px;
+  border: 1px solid rgba(255, 255, 255, 0.26);
+  border-radius: 999px;
+  background: var(--app-player-button-bg);
+  color: var(--app-player-button-text);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.16);
+  backdrop-filter: blur(10px);
   font-size: clamp(3.2rem, 8vw, 5.8rem);
   line-height: 1;
   text-align: center;
   font-weight: 900;
+}
+
+.arena-player__pending-life {
+  align-self: start;
+  justify-self: center;
+  min-width: 72px;
+  margin-top: 10px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--app-player-button-bg);
+  color: var(--app-player-button-text);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.14);
+  backdrop-filter: blur(10px);
+  font-size: clamp(1.15rem, 3vw, 1.8rem);
+  line-height: 1;
+  text-align: center;
+  font-weight: 900;
+}
+
+.arena-player__pending-life--positive {
+  color: #0f5f2a;
+}
+
+.arena-player__pending-life--negative {
+  color: #8f1717;
 }
 
 .arena-player__actions {
@@ -362,10 +436,10 @@ ion-button {
   pointer-events: none;
 }
 
-.arena-player__actions ion-button {
-  --background: rgba(255, 255, 255, 0.82);
-  --color: #090b10;
-  --box-shadow: none;
+.arena-player__actions button {
+  background: rgba(255, 255, 255, 0.82);
+  color: #090b10;
+  box-shadow: none;
   width: 52px;
   height: 52px;
   pointer-events: auto;
@@ -380,9 +454,178 @@ ion-button {
   line-height: 1;
 }
 
-.arena-player__actions ion-icon {
+.arena-player__actions mat-icon {
   color: #090b10;
   font-size: 1.45rem;
+}
+
+.match-menu-button {
+  appearance: none;
+  position: fixed;
+  z-index: 1000;
+  top: 50%;
+  left: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transform: translate(-50%, -50%);
+  min-width: 86px;
+  height: 44px;
+  padding: 0 14px;
+  border: 1px solid rgba(var(--app-text-rgb), 0.28);
+  border-radius: 999px;
+  background: rgba(var(--app-bg-rgb), 0.86);
+  color: var(--app-text);
+  font: 700 0.88rem/1 Roboto, "Segoe UI", sans-serif;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.32);
+  pointer-events: auto;
+  backdrop-filter: blur(14px);
+}
+
+.match-menu-button mat-icon {
+  color: var(--app-text);
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.match-menu-button:active {
+  transform: translate(-50%, -50%) scale(0.97);
+}
+
+.match-menu-sheet .mat-bottom-sheet-container {
+  padding: 0;
+  border-radius: 18px 18px 0 0;
+  background: var(--app-surface-strong);
+  color: var(--app-text);
+}
+
+.match-menu {
+  display: grid;
+  gap: 8px;
+  padding: 16px 12px max(16px, env(safe-area-inset-bottom));
+  color: var(--app-text);
+}
+
+.match-menu__header {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 0 4px 8px;
+}
+
+.match-menu__header div {
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--app-surface-muted);
+}
+
+.match-menu__header span {
+  display: block;
+  color: var(--app-muted);
+  font-size: 0.74rem;
+}
+
+.match-menu__header strong {
+  display: block;
+  margin-top: 2px;
+}
+
+.match-menu .mat-mdc-list-item {
+  border-radius: 12px;
+  color: var(--app-text);
+}
+
+.match-menu .mat-mdc-list-item,
+.match-menu .mat-mdc-list-item .mdc-list-item__primary-text,
+.match-menu .mat-mdc-list-item .mat-mdc-list-item-title,
+.match-menu .mat-icon {
+  color: var(--app-text);
+}
+
+:root:not([data-theme='light']) .match-menu .mat-mdc-list-item,
+:root:not([data-theme='light']) .match-menu .mat-mdc-list-item .mdc-list-item__primary-text,
+:root:not([data-theme='light']) .match-menu .mat-mdc-list-item .mat-mdc-list-item-title,
+:root:not([data-theme='light']) .match-menu .mat-icon {
+  color: #ffffff;
+}
+
+:root[data-theme='light'] .match-menu .mat-icon {
+  color: var(--app-muted);
+}
+
+.dice-dialog-panel .mat-mdc-dialog-surface {
+  background: var(--app-surface-strong);
+  color: var(--app-text);
+}
+
+.dice-dialog,
+.dice-dialog .mat-mdc-dialog-title,
+.dice-dialog .mat-mdc-dialog-content,
+.dice-dialog .mat-mdc-dialog-actions {
+  color: var(--app-text);
+}
+
+:root:not([data-theme='light']) .dice-dialog,
+:root:not([data-theme='light']) .dice-dialog .mat-mdc-dialog-title,
+:root:not([data-theme='light']) .dice-dialog .mat-mdc-dialog-content,
+:root:not([data-theme='light']) .dice-dialog .mat-mdc-dialog-actions,
+:root:not([data-theme='light']) .dice-dialog .mat-button-toggle,
+:root:not([data-theme='light']) .dice-dialog .mat-button-toggle-label-content,
+:root:not([data-theme='light']) .dice-dialog .mat-mdc-button,
+:root:not([data-theme='light']) .dice-dialog .mat-mdc-unelevated-button,
+:root:not([data-theme='light']) .dice-dialog .mat-mdc-unelevated-button .mdc-button__label,
+:root:not([data-theme='light']) .dice-dialog .mat-icon {
+  color: #ffffff;
+}
+
+.dice-dialog .mat-button-toggle {
+  background: var(--app-surface-muted);
+  color: var(--app-text);
+  border-color: var(--app-border-soft);
+}
+
+.dice-dialog .mat-button-toggle-checked {
+  background: rgba(var(--app-player-button-bg), 0.16);
+}
+
+.dice-dialog h2 {
+  margin: 0;
+}
+
+.dice-dialog__toggle {
+  width: 100%;
+}
+
+.dice-dialog__toggle .mat-button-toggle {
+  flex: 1;
+}
+
+.dice-dialog__result {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  margin-top: 18px;
+  padding: 14px;
+  border-radius: 14px;
+  background: var(--app-surface-muted);
+  border: 1px solid var(--app-border-soft);
+}
+
+.dice-dialog__result span {
+  color: var(--app-muted);
+  font-size: 0.78rem;
+}
+
+.dice-dialog__result strong {
+  font-size: 2.4rem;
+  line-height: 1;
+}
+
+.dice-dialog .mat-mdc-button,
+.dice-dialog .mat-mdc-unelevated-button {
+  color: var(--app-text);
 }
 
 .quick-actions {
@@ -610,10 +853,6 @@ ion-button {
     justify-items: start;
   }
 
-  .arena {
-    min-height: calc(100vh - 220px);
-  }
-
   .setup-grid {
     grid-template-columns: 1fr;
   }
@@ -629,15 +868,13 @@ ion-button {
 
   .arena-player__life {
     font-size: clamp(2.8rem, 10vw, 4.6rem);
+    min-width: min(70%, 220px);
+    padding: 10px 18px;
   }
 
 }
 
 @media (max-width: 560px) {
-  .app-shell {
-    padding: 14px 10px 22px;
-  }
-
   .topbar h1 {
     font-size: 1.65rem;
   }
@@ -658,11 +895,20 @@ ion-button {
     padding-inline: 56px;
   }
 
+  .arena-player {
+    border-radius: 14px;
+  }
+
+  .arena-player__name {
+    max-width: min(76%, 230px);
+    font-size: 1.08rem;
+  }
+
   .arena-player__actions {
     padding-inline: 8px;
   }
 
-  .arena-player__actions ion-button {
+  .arena-player__actions button {
     width: 46px;
     height: 46px;
   }
